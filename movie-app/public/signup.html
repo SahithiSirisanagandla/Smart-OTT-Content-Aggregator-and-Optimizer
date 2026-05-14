@@ -1,0 +1,69 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Signup - Smart OTT</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div class="form-container">
+
+    <div class="signup-box">
+
+
+        <h2 class="signup-title">Create Account</h2>
+
+
+        <form id="signupForm">
+            <input type="email" id="email" placeholder="Email" required>
+            <input type="text" id="username" placeholder="Username" required>
+            <input type="password" id="password" placeholder="Password" required>
+
+            <div class="signup-btn-container">
+                <button type="submit" class="signup-btn">Signup</button>
+            </div>
+        </form>
+
+
+        <div class="switch">
+            Already have an account?
+            <a href="login.html" class="login-link">Login</a>
+        </div>
+
+    </div>
+
+</div>
+
+
+<script>
+document.getElementById('signupForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+
+    const data = {
+        email: document.getElementById('email').value,
+        username: document.getElementById('username').value,
+        password: document.getElementById('password').value
+    };
+
+    const res = await fetch('http://localhost:3000/api/signup', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        credentials:'include',
+        body: JSON.stringify(data)
+    });
+
+    const result = await res.json();
+
+    if (res.ok) {
+        alert("Signed up successfully!");
+        window.location.href = "login.html";
+    } else {
+        alert(result.error);
+    }
+});
+</script>
+
+</body>
+</html>

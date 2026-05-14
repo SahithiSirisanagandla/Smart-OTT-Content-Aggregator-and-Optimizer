@@ -1,0 +1,98 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+<title>Account Overview</title>
+<link rel="stylesheet" href="main.css">
+</head>
+
+<body>
+
+<div class="container">
+
+<h1>Account Overview</h1>
+
+<div class="info">
+<p><b>Username:</b> <span id="username"></span></p>
+<p><b>Region:</b> <span id="region"></span></p>
+<p><b>Language:</b> <span id="language"></span></p>
+</div>
+
+<h2>Your Watchlist</h2>
+
+<div id="watchlist" class="watchlist"></div>
+
+<button onclick="goBack()">Back to Dashboard</button>
+
+</div>
+
+<script>
+
+async function loadUserSettings() {
+
+try{
+
+const res = await fetch("/user-settings",{
+credentials:'include'
+});
+
+const data = await res.json();
+
+document.getElementById("username").innerText = data.username;
+const savedRegion = localStorage.getItem("region");
+const savedLanguage = localStorage.getItem("language");
+
+document.getElementById("region").innerText = savedRegion || data.region;
+document.getElementById("language").innerText = savedLanguage || data.language;
+
+}catch(err){
+console.log(err);
+}
+
+}
+
+async function loadWatchlist(){
+
+try{
+
+const res = await fetch("/api/watchlist",{credentials:'include'});
+const movies = await res.json();
+
+const container = document.getElementById("watchlist");
+
+if(movies.length===0){
+container.innerHTML="<p>No movies in watchlist</p>";
+return;
+}
+
+movies.forEach(movie=>{
+
+const div=document.createElement("div");
+div.className="movie";
+
+div.innerHTML=`
+<img src="${movie.poster}">
+<p>${movie.title}</p>
+`;
+
+container.appendChild(div);
+
+});
+
+}catch(err){
+console.log(err);
+}
+
+}
+
+function goBack(){
+window.location.href="dashboard.html";
+}
+
+loadUserSettings();
+loadWatchlist();
+
+</script>
+</body>
+</html>
+

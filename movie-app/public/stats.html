@@ -1,0 +1,61 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+<title>User Stats</title>
+<link rel="stylesheet" href="main.css">
+</head>
+<body>
+<div class="container">
+<h1>User Statistics</h1>
+<div class="stats">
+<h2>Total Movies in Watchlist</h2>
+<h1 id="count">0</h1>
+</div>
+<h2>Your Watchlist</h2>
+<div id="watchlist" class="watchlist"></div>
+<button onclick="goBack()">Back to Dashboard</button>
+</div>
+
+<script>
+async function loadStats(){
+try{
+
+const res = await fetch("/api/watchlist",{credentials:'include'});
+const movies = await res.json();
+
+const safeMovies = Array.isArray(movies) ? movies : [];
+document.getElementById("count").innerText = safeMovies.length;
+
+const container = document.getElementById("watchlist");
+container.innerHTML = "";
+
+if(safeMovies.length === 0){
+container.innerHTML = "<p>No movies in your watchlist</p>";
+return;
+}
+
+safeMovies.forEach(movie=>{
+const div=document.createElement("div");
+div.className="movie";
+div.innerHTML=`
+<img src="${movie.poster}">
+<p>${movie.title}</p>
+`;
+container.appendChild(div);
+});
+
+}catch(err){
+console.log(err);
+}
+}
+
+loadStats();
+
+function goBack(){
+window.location.href="dashboard.html";
+}
+</script>
+</body>
+</html>
+

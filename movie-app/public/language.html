@@ -1,0 +1,55 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+<title>Language Settings</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="box">
+<h2>Select Language</h2>
+<select id="language">
+<option>English</option>
+<option>Hindi</option>
+<option>Telugu</option>
+<option>Tamil</option>
+<option>Kannada</option>
+<option>Malayalam</option>
+<option>Marathi</option>
+<option>Bengali</option>
+<option>Gujarati</option>
+<option>Punjabi</option>
+<option>Urdu</option>
+<option>Spanish</option>
+<option>French</option>
+<option>German</option>
+<option>Italian</option>
+<option>Portuguese</option>
+<option>Japanese</option>
+<option>Korean</option>
+<option>Chinese</option>
+<option>Thai</option>
+<option>Indonesian</option>
+<option>Turkish</option>
+<option>Arabic</option>
+<option>Russian</option>
+<option>Dutch</option>
+</select>
+
+
+<button onclick="saveLanguage()">Save Language</button>
+</div>
+</body>
+
+<script>
+function saveLanguage(){
+const language=document.getElementById("language").value;
+localStorage.setItem("language",language);
+alert("Language saved: " + language);
+window.location.href="dashboard.html";
+}
+</script>
+
+
+</html>
+

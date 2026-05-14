@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Dashboard - Smart OTT</title>
+<link rel="stylesheet" href="main.css">
+</head>
+
+<body>
+<header>
+<h1>SMART OTT CONTENT AGGREGATOR AND OPTIMIZER</h1>
+<div class="user-area" id="userArea">
+<div id="userCircle">U</div>
+<div id="userName">User</div>
+
+<div class="dropdown" id="dropdownMenu">
+<button onclick="openOverview()">Overview</button>
+<button onclick="changeRegion()">Region</button>
+<button onclick="changeLanguage()">Language</button>
+<button onclick="openStats()">Stats</button>
+<button onclick="changePassword()">Change Password</button>
+<button id="logoutBtn">Logout</button>
+<button onclick="deleteAccount()" style="color:#ffb3b3;">Delete Account</button>
+</div>
+
+</div>
+</header>
+<div style="display:flex;justify-content:flex-end;margin-right:20px;margin-top:10px;">
+<button class="watchlist-btn"
+onclick="window.location.href='watchlist.html'">
+Your Watchlist
+</button>
+</div>
+<div class="search-container">
+<input
+type="text"
+id="movieInput"
+placeholder="Enter movie name...">
+<button onclick="searchMovies()">Search</button>
+</div>
+<div id="resultsList" class="results-grid"></div>
+
+<script>
+const username=localStorage.getItem('username')||"User";
+document.getElementById('userName').innerText=username;
+document.getElementById('userCircle').innerText=username.charAt(0).toUpperCase();
+const userArea=document.getElementById('userArea');
+const dropdownMenu=document.getElementById('dropdownMenu');
+
+userArea.addEventListener('click',()=>{
+dropdownMenu.style.display=
+dropdownMenu.style.display==='block'
+?'none':'block';
+});
+
+document.addEventListener('click',function(event){
+if(!userArea.contains(event.target)){
+dropdownMenu.style.display='none';
+}
+});
+
+document
+.getElementById('logoutBtn')
+.addEventListener('click',(e)=>{
+
+e.stopPropagation();
+
+localStorage.removeItem('username');
+localStorage.removeItem('user');
+localStorage.removeItem('userId');
+
+window.location.href='index.html';
+
+});
+
+
+function openOverview(){
+window.location.href="overview.html";
+}
+
+function changeRegion(){
+window.location.href="region.html";
+}
+
+function changeLanguage(){
+window.location.href="language.html";
+}
+
+function openStats(){
+window.location.href="stats.html";
+}
+function changePassword(){
+window.location.href="changePassword.html";
+}
+async function deleteAccount(){
+const confirmDelete=confirm("Are you sure you want to delete your account?");
+if(!confirmDelete) return;
+const res=await fetch("/api/delete-account",{
+method:"DELETE",
+credentials:"include"
+});
+const data=await res.json();
+if(data.success){
+alert("Account deleted successfully");
+localStorage.clear();
+window.location.href="index.html";
+}else{
+alert(data.error);
+}}
+
+document
+.getElementById("movieInput")
+.addEventListener("keypress",function(e){
+if(e.key==="Enter"){
+searchMovies();
+}
+});
+
+async function addToWatchlist(movieData){
+try{
+const res=await fetch('/api/watchlist/add',{
+method:'POST',
+headers:{'Content-Type':'application/json'},
+credentials:'include',
+body:JSON.stringify(movieData)
+});
+const data=await res.json();
+if(data.success){
+alert("Movie added to watchlist");
+}else{
+alert(data.error||"Failed to add movie");
+}
+}catch(err){
+alert("Server error while adding movie");
+}}
+
+async function searchMovies(){
+const query=document.getElementById('movieInput').value.trim();
+const resultsList=document.getElementById('resultsList');
+if(!query)return;
+resultsList.innerHTML="<h2>Searching...</h2>";
+try{
+const res=await fetch(`/search?q=${encodeURIComponent(query)}`);
+const movies=await res.json();
+resultsList.innerHTML="";
+if(!movies.length){
+resultsList.innerHTML="<h2>No results found</h2>";
+return;
+}
+movies.forEach(movie=>{
+const card=document.createElement('div');
+card.className='movie-card';
+const posterUrl=movie.poster||"https://via.placeholder.com/200x300?text=No+Poster";
+card.innerHTML=`
+<img src="${posterUrl}" class="poster">
+<div class="info">
+<div class="title">${movie.title} (${movie.year})</div>
+<button class="add-btn">+ Add to Watchlist</button>
+</div>
+`;
+card.querySelector('.add-btn').onclick=()=>addToWatchlist(movie);
+resultsList.appendChild(card);
+});
+}catch(err){
+resultsList.innerHTML="<h2>Server error</h2>";
+}}
+</script>
+
+</body>
+</html>
+

@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Your Watchlist</title>
+<link rel="stylesheet" href="watchlist.css">
+</head>
+
+<body>
+<header><h1>YOUR WATCHLIST</h1></header>
+<button class="backBtn" onclick="goBack()">← Back</button>
+<div id="budgetContainer">
+<label>Enter your monthly budget (₹): </label>
+<input type="number" id="userBudget" placeholder="e.g., 500">
+<button onclick="recommendPlans()">Get Best Plans</button>
+</div>
+<div id="watchlistContainer"></div>
+<div id="recommendations"></div>
+</body>
+
+<script>
+function goBack(){
+window.location.href = "dashboard.html";
+}
+
+async function loadWatchlist(){
+
+try{
+
+const res = await fetch("/api/watchlist", { credentials:'include' });
+const movies = await res.json();
+
+const container = document.getElementById("watchlistContainer");
+container.innerHTML = "";
+
+if(!Array.isArray(movies) || movies.length===0){
+
+container.innerHTML = "<p>No movies in your watchlist.</p>";
+return;
+
+}
+
+movies.forEach(movie => {
+
+const poster = movie.poster || "https://via.placeholder.com/200x300?text=No+Poster";
+
+let streamingHTML = "";
+
+if(movie.streaming && movie.streaming.length > 0){
+
+streamingHTML = movie.streaming.map(s =>
+
+`<a href="${s.link}" target="_blank">
+Watch on ${s.name}
+</a>`
+
+).join("");
+
+}else{
+
+streamingHTML = "<div style='color:#aaa;font-size:12px;'>Not streaming in India</div>";
+
+}
+
+const card = document.createElement("div");
+
+card.className = "movieCard";
+
+card.innerHTML = `
+<img src="${poster}">
+<div class="movieTitle">${movie.title} (${movie.year || ""})</div>
+${streamingHTML}
+<button class="removeBtn" onclick="removeMovie('${movie._id}', this)">Remove from Watchlist</button>
+`;
+
+container.appendChild(card);
+
+});
+
+}catch(err){
+
+console.error("Watchlist fetch error:", err);
+
+}
+
+}
+
+async function removeMovie(movieId, btn){
+try{
+const res = await fetch(`/api/watchlist/remove/${movieId}`, {
+method:'DELETE',
+credentials:'include'
+});
+const data = await res.json();
+if(data.success){
+btn.parentElement.remove();
+}else{
+alert(data.error || "Failed to remove");
+}
+}catch(err){
+console.error(err);
+}
+}
+
+function recommendPlans(){
+
+const budget = parseInt(document.getElementById("userBudget").value);
+
+if(isNaN(budget) || budget <= 0){
+
+alert("Enter a valid budget!");
+return;
+
+}
+
+const movies = Array.from(document.querySelectorAll(".movieCard"));
+
+const totalWatchlistMovies = movies.length;
+
+if(movies.length === 0){
+
+alert("Watchlist is empty!");
+return;
+
+}
+
+const platforms = [
+
+{platform:"Netflix", price:149},
+{platform:"Amazon Prime Video", price:299},
+{platform:"JioCinema", price:29},
+{platform:"SonyLIV", price:299},
+{platform:"ZEE5", price:599},
+{platform:"JioStar", price:79},
+{platform:"Hotstar", price:149},
+{platform:"Disney+", price:299}
+
+];
+
+const platformCounts = {};
+
+movies.forEach(card => {
+
+const links = card.querySelectorAll("a");
+
+links.forEach(a => {
+
+const platform = a.innerText.replace("Watch on ","").trim();
+
+platformCounts[platform] = (platformCounts[platform] || 0) + 1;
+
+});
+
+});
+const filteredPlatforms = platforms.filter(p => (platformCounts[p.platform] || 0) > 0);
+const totalCombos = Math.pow(2, filteredPlatforms.length);
+const recDiv = document.getElementById("recommendations");
+recDiv.innerHTML = "<h3>All Possible OTT Combinations:</h3>";
+
+let bestMovies = 0;
+let bestCost = 0;
+let bestCombo = "";
+let bestCoverage = 0;
+
+for(let i = 1; i < totalCombos; i++){
+
+let combo = [];
+let cost = 0;
+
+for(let j = 0; j < filteredPlatforms.length; j++){
+
+if(i & (1 << j)){
+
+combo.push(filteredPlatforms[j].platform);
+cost += filteredPlatforms[j].price;
+
+}
+
+}
+
+let moviesCount = 0;
+
+movies.forEach(card => {
+
+const links = card.querySelectorAll("a");
+
+for(let link of links){
+
+const platform = link.innerText.replace("Watch on ","").trim();
+
+if(combo.includes(platform)){
+
+moviesCount++;
+break;
+
+}
+
+}
+
+});
+
+const coverage = ((moviesCount / totalWatchlistMovies) * 100).toFixed(1);
+
+if(cost <= budget && moviesCount > 0){
+
+const comboName = combo.join(" + ");
+
+recDiv.innerHTML += `
+<div>
+<b>${comboName}</b> → ₹${cost} 
+(${moviesCount} movies | ${coverage}% coverage)
+</div>
+`;
+
+if(moviesCount > bestMovies){
+
+bestMovies = moviesCount;
+bestCost = cost;
+bestCombo = comboName;
+bestCoverage = coverage;
+
+}
+
+}
+
+}
+
+recDiv.innerHTML += `
+<hr>
+<h3>Best Combination</h3>
+<div>
+<b>${bestCombo}</b> → ₹${bestCost}<br>
+${bestMovies} movies | ${bestCoverage}% coverage
+</div>
+`;
+
+}
+
+loadWatchlist();
+
+</script>
+</html>

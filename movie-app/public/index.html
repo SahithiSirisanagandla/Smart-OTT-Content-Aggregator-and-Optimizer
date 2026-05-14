@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Quick Movie Search - Smart OTT</title>
+<link rel="stylesheet" href="main.css">
+</head>
+
+<body>
+<header>
+    <h1>SMART OTT CONTENT AGGREGATOR AND OPTIMIZER</h1>
+    <nav>
+        <a href="login.html">Login</a>
+        <a href="signup.html">Signup</a>
+    </nav>
+</header>
+
+
+<div class="search-container">
+    <input type="text" id="movieInput" placeholder="Enter movie name...">
+    <button onclick="searchMovies()">Search</button>
+</div>
+
+
+<div id="resultsList" class="results-grid"></div>
+
+<script>
+async function addToWatchlist(movieData) {
+
+    window.location.href = 'login.html';
+    return;
+}
+
+async function searchMovies() {
+    const query = document.getElementById('movieInput').value.trim();
+    const resultsList = document.getElementById('resultsList');
+    if (!query) return;
+
+    resultsList.innerHTML = "<h2>Searching...</h2>";
+
+    try {
+        const res = await fetch(`/search?q=${encodeURIComponent(query)}`);
+        const movies = await res.json();
+
+        resultsList.innerHTML = "";
+
+        if (!movies.length) {
+            resultsList.innerHTML = "<h2>No results found.</h2>";
+            return;
+        }
+
+        movies.forEach(movie => {
+            const card = document.createElement('div');
+            card.className = 'movie-card';
+
+            const posterUrl = movie.poster ||
+                'https://via.placeholder.com/200x300?text=No+Poster';
+
+            card.innerHTML = `
+                <img src="${posterUrl}" class="poster">
+                <div class="info">
+                    <div class="title">${movie.title} (${movie.year})</div>
+                    <div>
+                        ${movie.streaming.length
+                            ? movie.streaming.map(s =>
+                                `<a href="${s.link}" target="_blank" class="stream-link">
+                                    Watch on ${s.name}
+                                </a>`).join('')
+                            : "<div style='font-size:0.8em;color:#aaa;'>Not streaming in India</div>"
+                        }
+                    </div>
+                    <button class="add-btn">+ Add to Watchlist</button>
+                </div>
+            `;
+
+            card.querySelector('.add-btn').onclick = () => addToWatchlist(movie);
+
+            resultsList.appendChild(card);
+        });
+
+    } catch (err) {
+        resultsList.innerHTML = "<h2>Error. Check server console.</h2>";
+    }
+}
+</script>
+</body>
+</html>

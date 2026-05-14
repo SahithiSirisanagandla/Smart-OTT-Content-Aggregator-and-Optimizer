@@ -1,0 +1,292 @@
+body{
+margin:0;
+font-family:'Segoe UI',sans-serif;
+background:linear-gradient(135deg,#000000,#1a0000,#330000);
+color:white;
+}
+
+
+header{
+display:flex;
+justify-content:space-between;
+align-items:center;
+padding:15px 50px;
+background:rgba(0,0,0,0.7);
+}
+
+header h1{
+color:#e50914;
+text-align:center;
+flex:1;
+}
+
+nav a{
+color:white;
+margin-left:20px;
+text-decoration:none;
+font-weight:bold;
+transition:0.3s;
+}
+
+nav a:hover{
+color:#e50914;
+}
+
+
+.search-container{
+display:flex;
+justify-content:center;
+align-items:center;
+margin:40px 0;
+gap:10px;
+}
+
+.search-container input{
+width:320px;
+padding:12px;
+border-radius:7px;
+border:none;
+}
+
+.search-container input:focus{
+outline:none;
+box-shadow:0 0 8px #e50914;
+}
+
+.search-container button{
+padding:12px 20px;
+border-radius:7px;
+border:none;
+background:#e50914;
+color:white;
+font-weight:bold;
+cursor:pointer;
+}
+
+.search-container button:hover{
+background:#b20710;
+}
+
+
+.results-grid{
+display:grid;
+grid-template-columns:repeat(auto-fit,minmax(200px,1fr));
+gap:20px;
+padding:40px;
+max-width:1200px;
+margin:auto;
+}
+
+
+.movie-card{
+background:rgba(255,0,0,0.05);
+border-radius:10px;
+overflow:hidden;
+border:1px solid rgba(255,0,0,0.2);
+display:flex;
+flex-direction:column;
+transition:transform 0.3s,box-shadow 0.3s;
+}
+
+.movie-card:hover{
+transform:translateY(-5px);
+box-shadow:0 8px 20px rgba(255,0,0,0.3);
+}
+
+.poster{
+width:100%;
+aspect-ratio:1/1.5;
+object-fit:cover;
+}
+
+.info{
+padding:10px;
+text-align:center;
+flex:1;
+display:flex;
+flex-direction:column;
+justify-content:space-between;
+}
+
+.title{
+font-weight:bold;
+margin-bottom:10px;
+}
+
+
+
+.stream-link{
+display:block;
+background:#e50914;
+color:white;
+padding:6px;
+margin-bottom:6px;
+text-decoration:none;
+border-radius:5px;
+font-size:0.85em;
+}
+
+.stream-link:hover{
+background:#b20710;
+}
+
+
+
+.add-btn{
+margin-top:auto;
+width:80%;
+padding:8px;
+background:transparent;
+border:1px solid #e50914;
+color:#e50914;
+border-radius:5px;
+cursor:pointer;
+align-self:center;
+}
+
+.add-btn:hover{
+background:#e50914;
+color:white;
+}
+
+
+.user-area{
+position:relative;
+text-align:center;
+cursor:pointer;
+}
+
+#userCircle{
+width:40px;
+height:40px;
+border-radius:50%;
+background:#e50914;
+display:flex;
+align-items:center;
+justify-content:center;
+color:white;
+font-weight:bold;
+font-size:1.2em;
+}
+
+#userName{
+font-size:0.9em;
+margin-top:5px;
+}
+
+.dropdown{
+display:none;
+position:absolute;
+top:55px;
+right:0;
+background:#1a0000;
+border:1px solid #e50914;
+border-radius:8px;
+overflow:hidden;
+z-index:10;
+min-width:170px;
+}
+
+.dropdown button{
+display:block;
+width:100%;
+padding:10px;
+border:none;
+background:transparent;
+color:white;
+cursor:pointer;
+text-align:left;
+padding-left:15px;
+}
+
+.dropdown button:hover{
+background:#b20710;
+}
+
+/* ===== WATCHLIST BUTTON ===== */
+
+.watchlist-btn{
+height:40px;
+width:140px;
+background:#e50914;
+color:white;
+cursor:pointer;
+font-size:13px;
+font-weight:bold;
+border:none;
+border-radius:5px;
+transition:0.3s;
+}
+
+.watchlist-btn:hover{
+background:#b20710;
+}
+
+
+.container{
+max-width:900px;
+margin:auto;
+padding:40px;
+}
+
+.container h1{
+color:#e50914;
+text-align:center;
+}
+
+.info{
+background:#1a0000;
+padding:20px;
+border-radius:10px;
+border:1px solid #e50914;
+margin-bottom:30px;
+}
+
+.watchlist{
+display:grid;
+grid-template-columns:repeat(auto-fill,minmax(150px,1fr));
+gap:20px;
+}
+
+.movie{
+background:#1a0000;
+border-radius:10px;
+overflow:hidden;
+border:1px solid rgba(255,0,0,0.2);
+text-align:center;
+}
+
+.movie img{
+width:100%;
+height:220px;
+object-fit:cover;
+}
+
+.movie p{
+padding:8px;
+font-size:14px;
+}
+
+
+.stats{
+background:#1a0000;
+padding:20px;
+border-radius:10px;
+border:1px solid #e50914;
+text-align:center;
+margin-bottom:30px;
+}
+
+.stats button{
+margin-top:20px;
+padding:10px 20px;
+background:#e50914;
+border:none;
+color:white;
+border-radius:5px;
+cursor:pointer;
+}
+
+.stats button:hover{
+background:#b20710;
+}
